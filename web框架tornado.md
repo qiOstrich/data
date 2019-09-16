@@ -856,7 +856,7 @@ b'admin'
 {b'name': b'hao', b'age': b'38'}
 ```
 
-## 三、MongoDB概述
+## MongoDB概述
 
 ### 1. MongoDB简介
 
@@ -1118,7 +1118,7 @@ python3
 
 Tornado 很早就加入了对 WebSocket 的支持，可以用来进行长连接的通信。
 
-## 一、WebSocket介绍
+##  WebSocket介绍
 
 ### 什么是 WebSocket
 
