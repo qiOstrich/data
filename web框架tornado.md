@@ -835,12 +835,388 @@ OK
    2) "44.7408"
 ```
 
+### 6. 在Python程序中使用Redis
+
+可以使用pip安装redis模块。redis模块的核心是名为Redis的类，该类的对象代表一个Redis客户端，通过该客户端可以向Redis服务器发送命令并获取执行的结果。上面我们在Redis客户端中使用的命令基本上就是Redis对象可以接收的消息，所以如果了解了Redis的命令就可以在Python中玩转Redis。
+
+```Python
+>>> import redis
+>>> client = redis.Redis(host='1.2.3.4', port=6379, password='1qaz2wsx')
+>>> client.set('username', 'admin')
+True
+>>> client.hset('student', 'name', 'hao')
+1
+>>> client.hset('student', 'age', 38)
+1
+>>> client.keys('*')
+[b'username', b'student']
+>>> client.get('username')
+b'admin'
+>>> client.hgetall('student')
+{b'name': b'hao', b'age': b'38'}
+```
+
+## 三、MongoDB概述
+
+### 1. MongoDB简介
+
+MongoDB是2009年问世的一个面向文档的数据库管理系统，由 C++ 语言编写，旨在为Web应用提供可扩展的高性能数据存储解决方案。虽然在划分类别的时候后，MongoDB被认为是NoSQL的产品，但是它更像一个介于关系数据库和非关系数据库之间的产品，在非关系数据库中它功能最丰富，最像关系数据库。
+
+MongoDB将数据存储为一个文档，一个文档由一系列的“键值对”组成，其文档类似于JSON对象，但是MongoDB对JSON进行了二进制处理（能够更快的定位key和value），因此其文档的存储格式称为BSON。关于JSON和BSON的差别大家可以看看MongoDB官方网站的文章[《JSON and BSON》](https://www.mongodb.com/json-and-bson)。
+
+目前，MongoDB已经提供了对Windows、MacOS、Linux、Solaris等多个平台的支持，而且也提供了多种开发语言的驱动程序，Python当然是其中之一。
+
+### 2. MongoDB的安装和配置
+
+可以从MongoDB的[官方下载链接](https://www.mongodb.com/download-center#community)下载MongoDB，官方为Windows系统提供了一个Installer程序，而Linux和MacOS则提供了压缩文件。下面简单说一下Linux系统如何安装和配置MongoDB。
+
+```Shell
+wget https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-amazon-3.6.5.tgz
+gunzip mongodb-linux-x86_64-amazon-3.6.5.tgz
+mkdir mongodb-3.6.5
+tar -xvf mongodb-linux-x86_64-amazon-3.6.5.tar --strip-components 1 -C mongodb-3.6.5/
+export PATH=$PATH:~/mongodb-3.6.5/bin
+mkdir -p /data/db
+mongod --bind_ip 172.18.61.250
+
+2018-06-03T18:03:28.232+0800 I CONTROL  [initandlisten] MongoDB starting : pid=1163 port=27017 dbpath=/data/db 64-bit host=iZwz97tbgo9lkabnat2lo8Z
+2018-06-03T18:03:28.232+0800 I CONTROL  [initandlisten] db version v3.6.5
+2018-06-03T18:03:28.232+0800 I CONTROL  [initandlisten] git version: a20ecd3e3a174162052ff99913bc2ca9a839d618
+2018-06-03T18:03:28.232+0800 I CONTROL  [initandlisten] OpenSSL version: OpenSSL 1.0.0-fips29 Mar 2010
+...
+2018-06-03T18:03:28.945+0800 I NETWORK  [initandlisten] waiting for connections on port 27017
+```
+
+> 说明：上面的操作中，export命令是设置PATH环境变量，这样可以在任意路径下执行mongod来启动MongoDB服务器。MongoDB默认保存数据的路径是/data/db目录，为此要提前创建该目录。此外，在使用mongod启动MongoDB服务器时，--bind_ip参数用来将服务绑定到指定的IP地址，也可以用--port参数来指定端口，默认端口为27017。
+
+### 3. MongoDB基本概念
+
+我们通过与关系型数据库进行对照的方式来说明MongoDB中的一些概念。
+
+| SQL         | MongoDB     | 解释（SQL/MongoDB）    |
+| ----------- | ----------- | ---------------------- |
+| database    | database    | 数据库/数据库          |
+| table       | collection  | 二维表/集合            |
+| row         | document    | 记录（行）/文档        |
+| column      | field       | 字段（列）/域          |
+| index       | index       | 索引/索引              |
+| table joins | ---         | 表连接/嵌套文档        |
+| primary key | primary key | 主键/主键（`_id`字段） |
+
+### 4. 通过Shell操作MongoDB
+
+启动服务器后可以使用交互式环境跟服务器通信，如下所示。
+
+```shell
+mongo --host 172.18.61.250
+
+MongoDB shell version v3.6.5
+connecting to: mongodb://172.18.61.250:27017/
+```
+
+1. 查看、创建和删除数据库。
+
+   ```JavaScript
+   > // 显示所有数据库
+   > show dbs
+   admin   0.000GB
+   config  0.000GB
+   local   0.000GB
+   > // 创建并切换到school数据库
+   > use school
+   switched to db school
+   > // 删除当前数据库
+   > db.dropDatabase()
+   { "ok" : 1 }
+   >
+   ```
+
+2. 创建、删除和查看集合。
+
+   ```JavaScript
+   > // 创建并切换到school数据库
+   > use school
+   switched to db school
+   > // 创建colleges集合
+   > db.createCollection('colleges')
+   { "ok" : 1 }
+   > // 创建students集合
+   > db.createCollection('students')
+   { "ok" : 1 }
+   > // 查看所有集合
+   > show collections
+   colleges
+   students
+   > // 删除colleges集合
+   > db.colleges.drop()
+   true
+   >
+   ```
+
+   > 说明：在MongoDB中插入文档时如果集合不存在会自动创建集合，所以也可以按照下面的方式通过创建文档来创建集合。
+
+3. 文档的CRUD操作。
+
+   ```JavaScript
+   > // 向students集合插入文档
+   > db.students.insert({stuid: 1001, name: '骆昊', age: 38})
+   WriteResult({ "nInserted" : 1 })
+   > // 向students集合插入文档
+   > db.students.save({stuid: 1002, name: '王大锤', tel: '13012345678', gender: '男'})
+   WriteResult({ "nInserted" : 1 })
+   > // 查看所有文档
+   > db.students.find()
+   { "_id" : ObjectId("5b13c72e006ad854460ee70b"), "stuid" : 1001, "name" : "骆昊", "age" : 38 }
+   { "_id" : ObjectId("5b13c790006ad854460ee70c"), "stuid" : 1002, "name" : "王大锤", "tel" : "13012345678", "gender" : "男" }
+   > // 更新stuid为1001的文档
+   > db.students.update({stuid: 1001}, {'$set': {tel: '13566778899', gender: '男'}})
+   WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+   > // 插入或更新stuid为1003的文档
+   > db.students.update({stuid: 1003}, {'$set': {name: '白元芳', tel: '13022223333', gender: '男'}},  upsert=true)
+   WriteResult({
+           "nMatched" : 0,
+           "nUpserted" : 1,
+           "nModified" : 0,
+           "_id" : ObjectId("5b13c92dd185894d7283efab")
+   })
+   > // 查询所有文档
+   > db.students.find().pretty()
+   {
+           "_id" : ObjectId("5b13c72e006ad854460ee70b"),
+           "stuid" : 1001,
+           "name" : "骆昊",
+           "age" : 38,
+           "gender" : "男",
+           "tel" : "13566778899"
+   }
+   {
+           "_id" : ObjectId("5b13c790006ad854460ee70c"),
+           "stuid" : 1002,
+           "name" : "王大锤",
+           "tel" : "13012345678",
+           "gender" : "男"
+   }
+   {
+           "_id" : ObjectId("5b13c92dd185894d7283efab"),
+           "stuid" : 1003,
+           "gender" : "男",
+           "name" : "白元芳",
+           "tel" : "13022223333"
+   }
+   > // 查询stuid大于1001的文档
+   > db.students.find({stuid: {'$gt': 1001}}).pretty()
+   {
+           "_id" : ObjectId("5b13c790006ad854460ee70c"),
+           "stuid" : 1002,
+           "name" : "王大锤",
+           "tel" : "13012345678",
+           "gender" : "男"
+   }
+   {
+           "_id" : ObjectId("5b13c92dd185894d7283efab"),
+           "stuid" : 1003,
+           "gender" : "男",
+           "name" : "白元芳",
+           "tel" : "13022223333"
+   }
+   > // 查询stuid大于1001的文档只显示name和tel字段
+   > db.students.find({stuid: {'$gt': 1001}}, {_id: 0, name: 1, tel: 1}).pretty()
+   { "name" : "王大锤", "tel" : "13012345678" }
+   { "name" : "白元芳", "tel" : "13022223333" }
+   > // 查询name为“骆昊”或者tel为“13022223333”的文档
+   > db.students.find({'$or': [{name: '骆昊'}, {tel: '13022223333'}]}, {_id: 0, name: 1, tel: 1}).pretty()
+   { "name" : "骆昊", "tel" : "13566778899" }
+   { "name" : "白元芳", "tel" : "13022223333" }
+   > // 查询学生文档跳过第1条文档只查1条文档
+   > db.students.find().skip(1).limit(1).pretty()
+   {
+           "_id" : ObjectId("5b13c790006ad854460ee70c"),
+           "stuid" : 1002,
+           "name" : "王大锤",
+           "tel" : "13012345678",
+           "gender" : "男"
+   }
+   > // 对查询结果进行排序(1表示升序，-1表示降序)
+   > db.students.find({}, {_id: 0, stuid: 1, name: 1}).sort({stuid: -1})
+   { "stuid" : 1003, "name" : "白元芳" }
+   { "stuid" : 1002, "name" : "王大锤" }
+   { "stuid" : 1001, "name" : "骆昊" }
+   > // 在指定的一个或多个字段上创建索引
+   > db.students.ensureIndex({name: 1})
+   {
+           "createdCollectionAutomatically" : false,
+           "numIndexesBefore" : 1,
+           "numIndexesAfter" : 2,
+           "ok" : 1
+   }
+   >
+   ```
+
+使用MongoDB可以非常方便的配置数据复制，通过冗余数据来实现数据的高可用以及灾难恢复，也可以通过数据分片来应对数据量迅速增长的需求。关于MongoDB更多的操作可以查阅[官方文档](https://mongodb-documentation.readthedocs.io/en/latest/) ，同时推荐大家阅读Kristina Chodorow写的[《MongoDB权威指南》](http://www.ituring.com.cn/book/1172)。
+
+### 5. 在Python程序中操作MongoDB
+
+可以通过pip安装pymongo来实现对MongoDB的操作。
+
+```Shell
+pip3 install pymongo
+python3
+```
+
+```Python
+>>> from pymongo import MongoClient
+>>> client = MongoClient('mongodb://120.77.222.217:27017')
+>>> db = client.school
+>>> for student in db.students.find():
+...     print('学号:', student['stuid'])
+...     print('姓名:', student['name'])
+...     print('电话:', student['tel'])
+...
+学号: 1001.0
+姓名: 骆昊
+电话: 13566778899
+学号: 1002.0
+姓名: 王大锤
+电话: 13012345678
+学号: 1003.0
+姓名: 白元芳
+电话: 13022223333
+>>> db.students.find().count()
+3
+>>> db.students.remove()
+{'n': 3, 'ok': 1.0}
+>>> db.students.find().count()
+0
+>>> coll = db.students
+>>> from pymongo import ASCENDING
+>>> coll.create_index([('name', ASCENDING)], unique=True)
+'name_1'
+>>> coll.insert_one({'stuid': int(1001), 'name': '骆昊', 'gender': True})
+<pymongo.results.InsertOneResult object at 0x1050cc6c8>
+>>> coll.insert_many([{'stuid': int(1002), 'name': '王大锤', 'gender': False}, {'stuid': int(1003), 'name': '白元芳', 'gender': True}])
+<pymongo.results.InsertManyResult object at 0x1050cc8c8>
+>>> for student in coll.find({'gender': True}):
+...     print('学号:', student['stuid'])
+...     print('姓名:', student['name'])
+...     print('性别:', '男' if student['gender'] else '女')
+...
+学号: 1001
+姓名: 骆昊
+性别: 男
+学号: 1003
+姓名: 白元芳
+性别: 男
+>>>
+```
+
+关于PyMongo更多的知识可以通过它的[官方文档](https://api.mongodb.com/python/current/tutorial.html)进行了解，也可以使用[MongoEngine](<https://pypi.org/project/mongoengine/>)这样的库来简化Python程序对MongoDB的操作，除此之外，还有以异步I/O方式访问MongoDB的三方库[motor](<https://pypi.org/project/motor/>)都是不错的选择。
 
 
+## 使用 WebSocket 进行聊天
+
+如果使用 Tornado 仅仅做普通的短连接 Web 站点开发就有点大材小用了。
+
+Tornado 很早就加入了对 WebSocket 的支持，可以用来进行长连接的通信。
+
+## 一、WebSocket介绍
+
+### 什么是 WebSocket
+
+WebSocket 是一种网络通信协议。在 2009 年诞生，于 2011 年被 IETF 定为标准 RFC 6455 通信标准。WebSocket API 也被 W3C 定为标准。
+
+WebSocket 是 HTML5 开始提供的一种在单个 TCP 连接上进行全双工 (full-duplex) 通讯的协议。没有了 Request 和 Response 的概念，两者地位完全平等，连接一旦建立，就建立了持久性连接，浏览器和服务器双方可以随时向对方发送数据。
+
+HTML5 是 HTML 最新版本，包含一些新的标签和全新的 API。HTTP 是一种协议，目前最新版本是 HTTP/2 ，所以 WebSocket 和 HTTP 有一些交集，两者相异的地方还是很多。两者交集的地方在 HTTP 握手阶段，握手成功后，数据就直接从 TCP 通道传输。
+
+### Web 上的即时通信
+
+在没有 WebSocket 之前，服务器很难主动向客户端推送数据。
+
+Web 为了实现即时通信，经历了最初的 polling, 到之后的 Long polling，等若干种方式。
+
+1. 短轮询 Polling
+
+    ![polling](img/polling.png)
+
+    这种方式下，是不适合获取实时信息的，客户端和服务器之间会一直进行连接，每隔一段时间就询问一次。客户端会轮询，有没有新消息。这种方式连接数会很多，一个接受，一个发送。而且每次发送请求都会有 HTTP 的 Header，会很耗流量，也会消耗 CPU 的利用率。
+
+    在 Web 端，短轮询用 AJAX JSONP Polling 轮询实现。
+
+    ![polling](img/polling_via_ajax.png)
+
+    - 优点：短连接，服务器处理简单，支持跨域、浏览器兼容性较好。
+    - 缺点：有一定延迟、服务器压力较大，浪费带宽流量、大部分是无效请求。
+
+2. 长轮询 Long Polling
+
+    ![long_polling](img/long_polling.png)
+
+    长轮询是对轮询的改进版，客户端发送 HTTP 给服务器之后，有没有新消息，如果没有新消息，就一直等待。直到有消息或者超时了，才会返回给客户端。消息返回后，客户端再次建立连接，如此反复。这种做法在某种程度上减小了网络带宽和 CPU 利用率等问题。
+
+    这种方式也有一定的弊端，实时性不高。如果是高实时的系统，肯定不会采用这种办法。因为一个 GET 请求来回需要 2个 RTT，很可能在这段时间内，数据变化很大，客户端拿到的数据已经延后很多了。
+
+    - 优点：减少轮询次数，低延迟，浏览器兼容性较好。
+    - 缺点：服务器需要保持大量连接。
+
+3. WebSocket
+
+    ![websocket](img/websocket.png)
+
+    为了解决其他机制的各种问题，人们设计出了 WebSocket 协议。
+
+    WebSocket 是 HTML5 开始提供的一种独立在单个 TCP 连接上进行全双工通讯的有状态的协议 (它不同于无状态的 HTTP)，并且还能支持二进制帧、扩展协议、部分自定义的子协议、压缩等特性。
+
+### 与普通 HTTP 协议的异同
+
+1. WebSocket 协议的 URL 是 `ws://` 或者 `wss://` 开头的，而不是 `HTTP://` 或者 `HTTPS://`
+2. WebSocket 使用与普通 HTTP 或 HTTPS 协议相同的 80 端口和 443 端口进行连接
+3. WebSocket 的 Header 中有连个特殊字段, 代表它是由 HTTP 协议升级为 WebSocket 协议
+    ```
+    Connection: Upgrade
+    Upgrade: websocket
+    ```
+
+### 通过 JS 建议一个简单的 WebSocket 连接
+
+```javascript
+var ws = new WebSocket('ws://example.com/socket');
+ws.onopen = function () {
+    ws.send("Connection established. Hello server!");
+}
+ws.onmessage = function(event) {
+  console.log('client recv: ', event.data)
+};
+ws.onclose = function () { ... }
+ws.onerror = function (error) { ... }
+```
+
+### Tornado 中使用 WebSocket
+
+```python
+class WebsockHandler(tornado.websocket.WebSocketHandler):
+    def open(self):
+        '''该方法处理建立连接时执行的操作'''
+        pass
+
+    def on_close(self):
+        '''该方法处理断开连接时执行的操作'''
+        pass
+
+    def on_message(self, message):
+        '''该方法处理收到消息时进行的操作'''
+        pass
+
+    def write_message(self, message):
+        '''该方法可以给其他人发送消息'''
+        pass
+```
 
 
+## 二、任务目标
 
-
+1. 通过 Tornado 开发一个聊天室程序
+2. 通过 WebSocket 进行长连接通信
+3. 使用 Redis 保留 100 条离线消息
 
 
 
