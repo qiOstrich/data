@@ -43,8 +43,6 @@ while True:
 
 数据库连接后端逻辑处理，后段逻辑处理是连接前段界面。
 
-![1568076713641](/home/qx/.config/Typora/typora-user-images/1568076713641.png)
-
 
 
 
@@ -75,14 +73,14 @@ import tornado.web
 from tornado.options import parse_command_line, define, options
 
 define("host", default='0.0.0.0', help="主机地址", type=str)
-define("port", default=8888, help="主机端口口", type=int)
+define("port", default=8888, help="主机端口", type=int)
 
 parse_command_line()
-print('你传入入的 host: %s' % options.host)
-print('你传入入的 port: %s' % options.port)
+print('你传入的 host: %s' % options.host)
+print('你传入的 port: %s' % options.port)
 
 class StoryHandler(tornado.web.RequestHandler):
-	stories = {1: '小小红帽', 2: '皮皮诺曹', 3: '阿拉丁神灯'}
+	stories = {1: '小红帽', 2: '皮诺曹', 3: '阿拉丁神灯'}
 	def get(self):
 		story_id = self.get_argument('story_id')
 		story = self.stories[story_id]
