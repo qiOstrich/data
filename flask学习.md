@@ -55,7 +55,7 @@ Controlle
 	调用模型，获取数据
 	控制器将数据展示到视图中
 
-### MTV：
+## MTV：
 MTV也叫做MVT
 本质上就是MVC，变种
 Model
@@ -257,7 +257,7 @@ templates文件夹中需要有一个名为testrender.html的网页文件
 
 
 
-### 路由参数
+### url_for路由参数
 
 ```python
 type:
@@ -287,7 +287,7 @@ def attrname(element):
 
 
 
-#### 安装postman
+### 安装postman
 
 ```
 unbuntu应用商店有
@@ -388,6 +388,9 @@ request.base_url
 request.host_url
 request.url
 request.remote_addr
+request.form.get()
+request.args.get()
+……
 ```
 
 
@@ -438,7 +441,7 @@ def handler404(exception):
 
 
 
-## 会话技术 cookie和session
+### 会话技术 cookie和session
 
 ```
 1.请求过程Request开始，到Response结束
@@ -736,7 +739,7 @@ temlates文件夹
 
 
 
-#### models
+### models
 
 ```
 1.数据交互的封装
@@ -760,7 +763,7 @@ temlates文件夹
 	通过操作对象，实现对数据的操作
 ```
 
-#### sqlalchemy
+### sqlalchemy
 
 ```
 flask-sqlalchemy
@@ -844,7 +847,7 @@ Student.query.all() # 得到所有的数据，返回值是basequery对象
 
 
 
-#### 项目拆分
+### 项目拆分
 
 ```
 一个项目需要4个环境，最少也要3个：
@@ -1229,7 +1232,7 @@ def getG():
 
 
 
-#### 文件绝对路径与修改static和templates文件夹位置
+### 文件绝对路径与修改static和templates文件夹位置
 
 ```
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -1271,7 +1274,7 @@ RESTful中更推荐使用HTTP的请求谓词（动词）来作为动作标识
 ```
 @blue.route('/testSplit/',method=['get','post','put','patch','delete'])
 def testSplit():
-	if request.method == 'GET': # get一定要大写
+	if request.method == 'GET': # 请求方式一定要大写
 		return 'get请求'
 	elif request.method == 'POST':
 		return 'post请求'
@@ -1320,11 +1323,11 @@ pip install flask-restful
 
 views.py文件删除，
 
-migrations文件夹删除，
+migrations文件夹删除，使用时重新初始化
 
 manager.py 删除蓝图
 
-models.py 类删除
+models.py 类删除，使用时重新写
 
 \__init__.py中调用init_urls(app)函数
 
@@ -1339,10 +1342,14 @@ def init_urls(app):
 api.add_resource(CatResource,'/cat/')
 api.add_resource(DogResource,'/dog/')
 api.add_resource(PigResource,'/pig/')
+api.add_resource(FoxResource,'/fox/')
+api.add_resource(PandaResource,'/panda/')
 # CatResource导入自apis中的Catapis.py
 ```
 
 apis 新建文件夹
+
+#### 输出
 
 其中CatApis.py
 
@@ -1419,15 +1426,108 @@ class PigResource(Resource):
 		return marshal(data=data,fields=r1fields)
 ```
 
+Nested(嵌套)使用：传对象
+
+```
+FoxApis.py:
+
+class FoxResouce(Resource):
+
+	r2field = {
+		'id':fields.Integer,
+		'name':fields.String,
+	}
+	r1field ={
+		'msg':'OK',
+		'status':fields.Integer,
+		'fox':fields.Nested(r2field)
+	}
+	@marshal_with(r1field)
+	def get(self):
+		fox = Animal.query.first()
+		data={
+			'msg':'OK',
+			'status':200,
+			'fox':fox,
+		}
+		return data
+
+```
+
+List(列表)使用：传列表
+
+```
+PandaApis.py:
+
+class PandaResouce(Resource):
+
+	r2field = {
+		'id':fields.Integer,
+		'name':fields.String,
+	}
+	r1field ={
+		'msg':'OK',
+		'status':fields.Integer,
+		'fox':fields.List(fields.Nested(r2field))
+	}
+	@marshal_with(r1field)
+	def get(self):
+		pandas = Animal.query.all()
+		data={
+			'msg':'OK',
+			'status':200,
+			'fox':pandas,
+		}
+		return data
+
+```
 
 
-文件形式：
 
-项目文件：restfulFlask
+#### 输入
 
--restfulFlask
+```
+parser =reqparse.Requset()
+TigerApis.py:
 
-\- - app
+class TigerResouce(Resource):
+
+	r2field = {
+		'id':fields.Integer,
+		'name':fields.String,
+	}
+	r1field ={
+		'msg':'OK',
+		'status':fields.Integer,
+		'fox':fields.List(fields.Nested(r2field))
+	}
+	@marshal_with(r1field)
+	def get(self):
+		tigers = Animal.query.all()
+		data={
+			'msg':'OK',
+			'status':200,
+			'fox':pandas,
+		}
+		return data
+
+```
+
+
+
+
+
+
+
+
+
+### flask-restful返回中文：加一句
+
+app.config.update(RESTFUL_JSON=dict(ensure_ascii=False))
+
+
+
+
 
 
 

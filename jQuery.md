@@ -1,4 +1,4 @@
-# jQuery
+# @jQuery
 
 封装过的js框架，体积小，简化了对HTML、CSS、DOM、事件、动画的处理。
 
@@ -59,9 +59,9 @@ $(function(){
 </script>
 ```
 
-##jQuery属性
+## jQuery属性
 
-###attr属性
+### attr属性
 
 ```html
 attr(name)//获取对象属性的值
@@ -73,7 +73,7 @@ removeAttr(name)//移除属性的值
 
 
 
-###class属性
+### class属性
 
 ```html
 addClass(class)//为元素添加class属性
@@ -84,7 +84,7 @@ hasClass(class)//判断是否有class属性
 
 
 
-###css属性
+### css属性
 
 ```html
 css(name)//取得元素样式的属性
@@ -303,15 +303,6 @@ $.ajax({
 
 
 
-
-
-
-
-
-
-
-> 
->
 
 
 
