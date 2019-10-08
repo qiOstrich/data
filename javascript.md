@@ -1,6 +1,6 @@
 # javascript学习
 
-##js定义
+## js定义
 
 JavaScript是一种小型的、轻量级的、面向对象的、跨平台的客户端脚本语言。
 
@@ -17,7 +17,7 @@ JavaScript一种直译式脚本语言，是一种动态类型、弱类型、基�
 - 改变html的样式
 - 验证输出
 
-##js特性
+## js特性
 
 1. 脚本语言
 2. 基于对象
@@ -44,9 +44,9 @@ html中的注释：<!--多行-->
 
 
 
-##js中的变量
+## js中的变量
 
-###js变量声明
+### js变量声明
 
 使用关键字`var`声明变量
 
@@ -64,7 +64,7 @@ html中的注释：<!--多行-->
 
 **变量是没有类型，只有变量的值才有类型**
 
-####数值型Int、Float、NaN
+#### 数值型Int、Float、NaN
 
 数值型包含：整形，浮点型，NaN（not a number）
 
@@ -98,7 +98,7 @@ split(str),切割字符串，以str为切割对象，返回一个数组。
 
 
 
-####布尔型Boolean
+#### 布尔型Boolean
 
 只有true和false两个值。
 
@@ -108,11 +108,11 @@ split(str),切割字符串，以str为切割对象，返回一个数组。
 
 零和没值的类型都会转成false（NaN,null,undefined,""）
 
-####未定义型undefined
+#### 未定义型 undefined
 
-####空null
+#### 空 null
 
-####数组
+#### 数组
 
 数据相当于python中的list，在js中叫array。
 
@@ -187,7 +187,7 @@ Math对象，数学方面的属性和方法。
 
 Date对象，日期。
 
-###日期对象Date
+### 日期对象Date
 
 ```javascript
 var d = new Date();
@@ -220,7 +220,7 @@ getDay() 星期几，0-6，从星期天开始
 
 getTime() 获取时间戳，毫秒
 
-###Math数学对象
+### Math数学对象
 
 Math对象，数学方面的属性和方法。
 
@@ -250,15 +250,7 @@ random()，随机取0~1的小数。
 
 
 
-
-
-
-
-
-
-
-
-##js中的运算符
+## js中的运算符
 
 js有++ 表示自增1，-- 自减1。
 
@@ -304,7 +296,7 @@ delete obj.a
 
 实现调用的运算符。
 
-###括号（）、[ ]
+### 括号（）、[ ]
 
 () 运算符：主要用优先级方面。也是方法参数的小括号，函数参数小括号。
 
@@ -376,7 +368,7 @@ continue，回到条件判断，continue后的语句执行。
 
 
 
-#BOM
+# BOM
 
 Browers Object Model 浏览器对象模型
 
@@ -471,7 +463,7 @@ platform 平台
 
 
 
-##location
+## location
 
 href：获取或设置地址栏中的地址。如：location.href = “http://www.sina.com.cn”
 
@@ -516,7 +508,7 @@ back() 相当于“后退”按钮
 
 Document Object Model
 
-#延时器
+# 延时器
 
 只执行一次
 

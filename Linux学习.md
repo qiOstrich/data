@@ -319,7 +319,7 @@ id   -g   查看gid
 
 ### 修改用户属性
 
-usermod 参数 祖用户名
+usermod 参数 组用户名
 
 参数：
 
@@ -823,6 +823,7 @@ python脚本的第一句一般是：`#！/usr/bin/env python`
 
 ```
 fileone=`md5sum ./dir/file | awk "{print $1}"`
+
 这条语句表示得到file的md5加密中第一列，并用变量fileone获取
 ```
 
