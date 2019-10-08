@@ -424,7 +424,7 @@ mysql驱动
 		init.py中   import  pymysql      pymysql.install_as_mysqldb()
 ```
 
-### DML
+### DML(模型迁移，表操作)
 
 ```
 数据操作
@@ -922,7 +922,7 @@ def findHoster(request): # 通过外键对象找主键对象
     return HttpResponse('You getted it.')
 ```
 
-
+#### F对象（字段间比较）
 
 ```
 F对象.表内字段的值的比较
@@ -948,7 +948,7 @@ def testF(request):
     return HttpResponse('好样的')
 ```
 
-
+#### G对象（逻辑运算）
 
 ```
 Q对象 eg：常适用于逻辑运算 与或非（一般都可以通过练市调用代替）
@@ -1919,7 +1919,7 @@ insepectdb会迁移当前连接数据库中所有的表，产生模型。
 
 ### 模型关系
 
-#### 一对一 （OneToOne）
+#### 一对一 OneToOne
 
 ```
 应用场景
@@ -2004,6 +2004,98 @@ def deleteStudent(request):
 
     id_studeng = models.OneToOneField(Student, null=True, blank=True, on_delete=models.PROTECT)
 # on_delete=models.PROTECT需要先删从表，不然主表删不掉，会报错。
+```
+
+
+
+#### 一对多 ForeignKey
+
+```python
+# 部门表
+class Departement(models.Model):
+    d_name = models.CharField(max_length=32)
+    class Meta:
+        db_table = 'dept'
+# 员工表
+class Emplo(models.Model):
+    e_name = models.CharField(max_length=32)
+    e_age = models.IntegerField()
+    e_dept = models.ForeignKey(Departement, null=True, blank=True, on_delete=models.SET_NULL)
+    # 一对多使用外键，而不是onetomany
+    class Meta:
+        db_table = 'emplooyee'
+```
+
+
+
+添加（同时建立连接）
+
+注意：`当主表数据提交后才能在从表中建立外键`
+
+```python
+def add(request):
+    emp1 = Emplo()
+    emp1.e_name = 'tom'
+    emp1.e_age = 18
+
+    emp2 = Emplo()
+    emp2.e_name = 'jerry'
+    emp2.e_age = 18
+
+    dept = Departement()
+    dept.d_name = '销售部'
+
+    dept.save()
+    
+    emp2.e_dept = dept
+    emp1.e_dept = dept
+    
+    emp1.save()
+    emp2.save()
+    # emp1 和emp2 保存应该在部门已经存在的前提下，不然外键会不能提交
+    return HttpResponse('加好了')
+```
+
+删除
+
+注意：`删除基于查询，只有得到查询对象才能进行删除。`
+
+```
+def delete(request):
+    dept = Departement.objects.filter(d_name='研发部门')
+    dept.delete()
+    return HttpResponse('删掉了')
+```
+
+查询
+
+主查从：
+
+```python
+def querykey(request):
+    dept = Departement.objects.filter(d_name='人力资源')[0]
+    emp_list = dept.emplo_set
+    # set集后面不能出现括号，需要所有结果，又需要.all() 才能得到queryset
+    for ind in emp_list.all():
+        print(ind.id, ind.e_name, ind.e_age)
+    print(dept.d_name)
+    return HttpResponse('查到了')
+```
+
+从查主:
+
+```python
+def queryfor(request):
+    emp = Emplo.objects.filter(e_name='zs')
+    deptment = emp[0].e_dept
+    print(deptment.id, deptment.d_name)
+    return HttpResponse('查到了')
+```
+
+#### 多对多 manytomany
+
+```
+
 ```
 
 
