@@ -1033,6 +1033,29 @@ echo $num
 
 
 
+### 命令修正：the fuck
+
+```
+thefuck
+	一个终端指令修复工具
+	当指令在输入错误的时候，我们可以通过fuck进行弥补
+		可以提供指令修复方案
+		enter
+			确定
+		control+c
+			取消
+		↑↓ 
+			调整
+	使用
+		sudo apt update
+		sudo apt install python3-dev python3-pip
+		sudo pip3 install thefuck
+		更新环境变量
+			vim ~/.bashrc
+			eval "$(thefuck --alias fuck)"
+			source ~/.bashrc
+```
+
 
 
 
