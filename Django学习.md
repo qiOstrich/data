@@ -361,7 +361,7 @@ http://localhost:8000/app/index/
 	再填坑
 		渲染模板的时候传递上下文进来
 		上下文是一个字典
-		content={'key':'value'}
+		context={'key':'value'}
 	模板的兼容性很强
 		不传入不会报错
 		多传入也会自动优化掉
@@ -373,9 +373,9 @@ http://localhost:8000/app/index/
 	render底层实现：应用场景，发送邮件，邮件的内容需要使用render方法来操纵
 		加载
 			three_index = loader.get_template('three.html')
-			content={'xxx':'xxxx'}
+			context={'xxx':'xxxx'}
 		渲染
-			result = three_index.render(content=content)
+			result = three_index.render(context=context)
 			return HttpResponse(result)
 ```
 
@@ -1098,10 +1098,10 @@ base.html:
           	  或者选中行，使用control+ /
 ```
 
-##### withratio
+##### widthratio
 
 ```
-withratio
+widthratio
             乘
             {% widthratio 数  分母  分子  %}
             {% widthratio count 1 5 %}
@@ -2312,9 +2312,9 @@ Django内置：
                   
 ```
 
-####  实现步骤：
+####  实现步骤
 ​		（1）表单的提交方式必须是post
-​         （2）添加表单的属性enctype = mutipart/form-data
+​         （2）添加表单的属性enctype = multipart/form-data
 ​         （3）在settings中设置MEDIA_ROOT = os.path.join(BASE_DIR,'XXX')
 ​         （4）创建模型  模型的属性是imagefield 
 ​         （5）注意imagefield依赖于pillow

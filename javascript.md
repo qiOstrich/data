@@ -362,7 +362,7 @@ while(条件){
 
 break，直接退出当前循环。
 
-continue，回到条件判断，continue后的语句执行。
+continue，回到条件判断，continue后的语句不执行。
 
 
 

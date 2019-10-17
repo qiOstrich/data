@@ -1,8 +1,8 @@
-# @jQuery
+# jQuery
 
 封装过的js框架，体积小，简化了对HTML、CSS、DOM、事件、动画的处理。
 
-##各种选择器
+## 各种选择器
 
 ```html
 <script src='name.js'></script>//不能加内容
@@ -82,13 +82,20 @@ toggleClass(class)//切换样式，没有
 hasClass(class)//判断是否有class属性
 ```
 
+```
+eg:
+$('#div1').removeClass('class1 class2 ……')
+```
+
 
 
 ### css属性
 
+需要加{}
+
 ```html
-css(name)//取得元素样式的属性
-css(name,value)//改变元素样式
+css({name})//取得元素样式的属性
+css({name,value})//改变元素样式
 css({width:"20px",height:"40px",……})//同时为元素设置多个样式属性
 ```
 
